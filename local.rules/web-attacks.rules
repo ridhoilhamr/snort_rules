@@ -1,0 +1,23 @@
+# $Id: local.rules,v 1.11 2004/07/23 20:15:44 bmc Exp $
+# ----------------
+# LOCAL RULES
+# ----------------
+# This file intentionally does not come with signatures.  Put your local
+# additions here.
+
+# SQL Injection
+alert tcp any any -> any 80 (msg: "Error Based SQL Injection Detected"; content:"%270%27"; sid:1000001;)
+alert tcp any any -> any 80 (msg:"SQL Injection attack hasbeen detected 3"; flow:established,to_server;content:"id";nocase;http_uri;pcre:"/(and\W+select)|(union.*select)|((or|and) \d+=\d+)|(\'.\-\-)/Ui";classtype:web-application-attack;sid:1000005;rev:1;)
+alert tcp any any -> any 80 (msg:"Regex for typical SQL Injection attack";flow:to_server,established;pcre:"/\w*((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))/ix"; classtype:Web-application-attack; sid:910001;rev:5;)
+alert tcp any any -> any 80 (msg:"[The system detected Sql Injection Attack-1]"; flow:to_server,established; uricontent:"/?id";nocase;pcre:"/(((\?id=)|(\?id%3D))(\w*)(((\')|(\%27))((\w+)|(\W+)|(\D+)|(\d+))))/ix"; classtype:web-application-attack; sid:1000015; rev:1;)
+alert tcp any any -> any 80 (msg:"[The system detected Sql Injection Attack-2]"; flow:to_server,established; uricontent:"/?id";nocase; pcre:"/(((\?id=)|(\?id%3D)).{0,}(\%3b)|(\;).{0,}((\#)|(\%23)))/ix"; classtype:web-application-attack; sid:1000011; rev:1;)
+alert tcp any any -> any 80 (msg:"INDICATOR-SCAN sqlmap SQL injection scan attempt"; flow:to_server,established; content:"User-Agent|3A| sqlmap"; fast_pattern:only; http_header; metadata:service http; reference:url,sqlmap.sourceforge.net; classtype:web-application-activity; sid:19779; rev:6;)
+
+# XSS - Cross Site Scripting
+alert tcp any any -> any 80 (msg:"[XSS Attack Detected]"; flow:to_server,established; pcre:"/(((\%3e\%3c)|(\%3c))((\w*)([.]*|([\n]*.[\n]*)|[\r]*.[\r]*)(\w*))|((\%[0-9a-f]+)+)(%3e))/ix"; classtype:web-application-attack; sid:1000071; rev:1;)
+
+# Command Execution
+alert tcp any any -> any 80 (msg:"Web-Attack [Command execution attempt]"; flow:to_server,established; uricontent:"/exec/"; nocase; pcre:"/((((\w*)|(\d*)|(\D*)|(.*))((\%3b)|(\;)((\w*)|(\d*)|(\D*)|(.))[^&submit])|((\%7C)|(\|)[^&submit])|((\%26)|(&)[^submit])(\w+)[&submit]))/ix"; classtype:web-application-attack; sid:10000018;rev:1;)
+
+# Local File inclusion
+alert tcp any any -> any 80 (msg:"[File Inclusion Attempt-With File traversal-1]"; flow:to_server,established;uricontent:"/?page=";nocase; pcre:"/(((\/?page=)|(\/?page%3D))((((\.)|(\%2e))+((\/)|(\%2f)))+(\w)*))/ix"; classtype:web-application-attack; sid:10000122; rev:1;)
