@@ -1,0 +1,10 @@
+# $Id: local.rules,v 1.11 2004/07/23 20:15:44 bmc Exp $
+# ----------------
+# LOCAL RULES
+# ----------------
+# This file intentionally does not come with signatures.  Put your local
+# additions here.
+
+# nmap scanning tools
+alert icmp any any -> any any (msg: "NMAP ping sweep Scan"; dsize:0;sid:10000004; rev: 1;)
+alert tcp any any -> any 22 (msg: "NMAP TCP Scan";sid:10000005; rev:2; )
