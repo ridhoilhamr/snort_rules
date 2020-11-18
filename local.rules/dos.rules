@@ -12,3 +12,4 @@ alert tcp any any -> any any (msg: "PUSH-ACK Flood Dos"; sid:1000003; flags:PA; 
 alert tcp any any -> any $HTTP_PORTS (msg: "Smurf Dos Attack"; flow:to_server,established; flags:S; threshold: type threshold, track by_src, seconds 10, count 1000;classtype:attempted-dos; sid:1000012; rev:1;)
 alert ip any any -> any any (msg: "ATTACK RESPONSES id check returned root"; content: "uid=0(root)"; classtype:bad-unknown; sid:498; rev:3;)
 alert tcp any any -> any any (msg: "FIN Dos"; sid:1000005; flags:F; )
+alert tcp any any -> 192.168.20.2 any (msg: “SYN flood attact detected”; flags:S; threshold: type threshold, track by_dst, count 20, seconds 1; sid: 50000001; rev:1;)
